@@ -64,7 +64,7 @@ O repositório possui regras padronizadas para análise estática, linter, teste
 
 A automação foi dividida em dois workflows reutilizáveis (`workflow_call`), mantendo a **Qualidade (Lint & Unit Test)** e o **Build (Docker)** totalmente independentes e modulares.
 
-### 1. Workflow de Qualidade (`reusable-quality.yml`)
+### 1. Workflow de Qualidade (`reusable-python-quality.yml`)
 Cobre as etapas de **Linter / Static Analysis** (`ruff`, `flake8`) e **Unit Tests & Coverage** (`pytest`).
 
 **Como reutilizar em outros repositórios:**
@@ -79,7 +79,7 @@ on:
 
 jobs:
   quality:
-    uses: SEU_USUARIO_OU_ORG/targeting-service/.github/workflows/reusable-quality.yml@main
+    uses: SEU_USUARIO_OU_ORG/targeting-service/.github/workflows/reusable-python-quality.yml@main
     with:
       python-version: '3.11'
 ```

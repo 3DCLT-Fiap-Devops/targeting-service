@@ -9,6 +9,6 @@ on:
 jobs:
   quality:
     name: Code Quality & Unit Tests
-    uses: ./.github/workflows/reusable-quality.yml
+    uses: ./.github/workflows/reusable-python-quality.yml
     with:
       python-version: '3.11'
