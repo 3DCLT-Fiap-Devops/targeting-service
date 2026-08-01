@@ -1,9 +1,8 @@
-name: Build Pipeline
+name: DevSecOps Build Pipeline
 
 on:
   push:
     branches: [main, master, dev]
-
 
 concurrency:
   group: build-pipeline-${{ github.ref }}
@@ -16,9 +15,17 @@ jobs:
     with:
       python-version: "3.11"
 
-  build:
+  security:
+    name: DevSecOps Security Analysis
     needs: quality
+    uses: ./.github/workflows/reusable-security.yml
+    with:
+      python-version: "3.11"
+      trivy-severity: "CRITICAL,HIGH"
+
+  build:
     name: Docker Container Build
+    needs: security
     uses: ./.github/workflows/reusable-build.yml
     with:
       dockerfile-path: "Dockerfile.targeting"
