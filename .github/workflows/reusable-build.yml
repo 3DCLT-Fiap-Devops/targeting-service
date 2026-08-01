@@ -37,4 +37,6 @@ jobs:
           context: .
           file: ${{ inputs.dockerfile-path }}
           push: ${{ inputs.push-image }}
-          tags: ${{ inputs.image-name }}:latest
+          tags: |
+            ${{ inputs.image-name }}:latest
+            ${{ inputs.image-name }}:${{ github.sha }} 

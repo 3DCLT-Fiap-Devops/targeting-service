@@ -4,6 +4,10 @@ on:
   pull_request:
     branches: [ main, master, dev ]
 
+concurrency:
+  group: quality-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Code Quality & Unit Tests
