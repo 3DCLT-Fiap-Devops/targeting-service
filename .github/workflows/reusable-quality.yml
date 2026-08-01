@@ -1,4 +1,4 @@
-name: Reusable Quality Workflow
+name: Python Quality Workflow
 
 on:
   workflow_call:

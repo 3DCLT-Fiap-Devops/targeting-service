@@ -1,4 +1,4 @@
-name: Reusable Build Workflow
+name: Container Build Workflow
 
 on:
   workflow_call:
@@ -7,12 +7,12 @@ on:
         description: 'Caminho para o Dockerfile'
         required: false
         type: string
-        default: 'Dockerfile.targeting'
+        default: 'Dockerfile'
       image-name:
         description: 'Nome da imagem Docker'
         required: false
         type: string
-        default: 'targeting-service'
+        default: 'service'
       push-image:
         description: 'Se deve fazer push da imagem'
         required: false
