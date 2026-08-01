@@ -1,0 +1,14 @@
+name: Quality Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  quality:
+    name: Code Quality & Unit Tests
+    uses: ./.github/workflows/reusable-quality.yml
+    with:
+      python-version: '3.11'

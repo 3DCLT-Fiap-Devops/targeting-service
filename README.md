@@ -12,16 +12,16 @@ Este é o serviço de regras de segmentação (targeting) do projeto ToggleMaste
 
 ## 🚀 Rodando Localmente
 
-1.  **Clone o repositório** e entre na pasta `targeting-service`.
+1. **Clone o repositório** e entre na pasta `targeting-service`.
 
-2.  **Prepare o Banco de Dados:**
+2. **Prepare o Banco de Dados:**
     * Crie um banco de dados no seu PostgreSQL (ex: `targeting_db`).
     * Execute o script `db/init.sql` para criar a tabela `targeting_rules`:
         ```bash
         psql -U seu_usuario -d targeting_db -f db/init.sql
         ```
 
-3.  **Configure as Variáveis de Ambiente:**
+3. **Configure as Variáveis de Ambiente:**
     Crie um arquivo chamado `.env` na raiz desta pasta (`targeting-service/`) com o seguinte conteúdo:
     ```.env
     # String de conexão do seu banco de dados PostgreSQL
@@ -34,16 +34,79 @@ Este é o serviço de regras de segmentação (targeting) do projeto ToggleMaste
     AUTH_SERVICE_URL="http://localhost:8001"
     ```
 
-4.  **Instale as Dependências:**
+4. **Instale as Dependências:**
     ```bash
     pip install -r requirements.txt
     ```
 
-5.  **Inicie o Serviço:**
+5. **Inicie o Serviço:**
     ```bash
     gunicorn --bind 0.0.0.0:8003 app:app
     ```
     O servidor estará rodando em `http://localhost:8003`.
+
+---
+
+## 🛠️ Desenvolvimento Local
+
+O repositório possui regras padronizadas para análise estática, linter, testes e build:
+
+- **Instalar dependências de dev**: `make install-dev`
+- **Executar Linter e Análise Estática**: `make lint`
+- **Executar Formatação Automática**: `make format`
+- **Executar Testes Unitários e Cobertura**: `make test`
+- **Executar Build Docker**: `make build`
+- **Verificação Completa**: `make check-all`
+
+---
+
+## 🔄 GitHub Actions: Workflows Reutilizáveis Separados
+
+A automação foi dividida em dois workflows reutilizáveis (`workflow_call`), mantendo a **Qualidade (Lint & Unit Test)** e o **Build (Docker)** totalmente independentes e modulares.
+
+### 1. Workflow de Qualidade (`reusable-quality.yml`)
+Cobre as etapas de **Linter / Static Analysis** (`ruff`, `flake8`) e **Unit Tests & Coverage** (`pytest`).
+
+**Como reutilizar em outros repositórios:**
+```yaml
+name: Quality Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  quality:
+    uses: SEU_USUARIO_OU_ORG/targeting-service/.github/workflows/reusable-quality.yml@main
+    with:
+      python-version: '3.11'
+```
+
+### 2. Workflow de Build (`reusable-build.yml`)
+Focado exclusivamente na montagem do container Docker (`docker/build-push-action`).
+
+**Como reutilizar em outros repositórios:**
+```yaml
+name: Build Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  build:
+    uses: SEU_USUARIO_OU_ORG/targeting-service/.github/workflows/reusable-build.yml@main
+    with:
+      dockerfile-path: 'Dockerfile' # ou Dockerfile.seu-servico
+      image-name: 'nome-do-seu-servico'
+      push-image: false
+```
+
+---
 
 ## 🧪 Testando os Endpoints
 
@@ -55,7 +118,7 @@ curl http://localhost:8003/health
 ```
 Saída esperada: `{"status":"ok"}`
 
-**2. Crie uma nova Regra de Segmentação:** Vamos criar uma regra para a flag enable-new-dashboard (que você criou no flag-service). Esta regra fará a flag aparecer para 50% dos usuários.
+**2. Crie uma nova Regra de Segmentação:**
 ```bash
 curl -X POST http://localhost:8003/rules \
 -H "Content-Type: application/json" \
@@ -69,16 +132,14 @@ curl -X POST http://localhost:8003/rules \
     }
 }'
 ```
-Saída esperada: (Um JSON com os dados da regra criada).
 
-**3. Busque a Regra que você criou:**
+**3. Busque a Regra:**
 ```bash
 curl http://localhost:8003/rules/enable-new-dashboard \
 -H "Authorization: Bearer SUA_CHAVE_API"
 ```
-Saída esperada: (O JSON da regra que você acabou de criar).
 
-**4. Atualize a Regra (mude para 75%):**
+**4. Atualize a Regra:**
 ```bash
 curl -X PUT http://localhost:8003/rules/enable-new-dashboard \
 -H "Content-Type: application/json" \
@@ -90,4 +151,3 @@ curl -X PUT http://localhost:8003/rules/enable-new-dashboard \
     }
 }'
 ```
-Saída esperada: (O JSON da regra atualizada, com `"value": 75`).
